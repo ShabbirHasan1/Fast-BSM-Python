@@ -1,7 +1,6 @@
 import scipy.stats as stats
 import scipy.special as sp
 import numpy as np
-import numba as nb
 
 class BlackScholesMerton:
 
