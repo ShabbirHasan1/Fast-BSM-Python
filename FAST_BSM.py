@@ -18,14 +18,16 @@ class BlackScholesMerton:
     
     def dn(self, d):
         # the first order derivative of n(d)
-        return np.exp(-d**2/2.0) / np.sqrt(2*np.pi)
-
+        sqrt_2pi = 2.5066282746310002
+        return np.exp(-d**2/2.0) / sqrt_2pi
+        # return np.exp(-d**2/2.0) / np.sqrt(2*np.pi)
+    
     def d1(self):
-        d1 = (np.log(self.s / self.k) + (self.r - self.q + self.sigma ** 2 * 0.5) * self.T) / (self.sigma * np.sqrt(self.T))
+        d1 = (np.log(self.s / self.k) + (self.r - self.q + self.sigma**2 * 0.5) * self.T) / (self.sigma * np.sqrt(self.T))
         return d1
 
     def d2(self):
-        d2 = (np.log(self.s / self.k) + (self.r - self.q - self.sigma ** 2 * 0.5) * self.T) / (self.sigma * np.sqrt(self.T))
+        d2 = (np.log(self.s / self.k) + (self.r - self.q - self.sigma**2 * 0.5) * self.T) / (self.sigma * np.sqrt(self.T))
         return d2
 
     def bsm_price(self):
@@ -39,8 +41,6 @@ class BlackScholesMerton:
             return price
         else:
             print("option type can only be c or p")
-
-    ''' Greek letters for European options on an asset that provides a yield at rate q '''
 
     def delta(self):
         d1 = self.d1()

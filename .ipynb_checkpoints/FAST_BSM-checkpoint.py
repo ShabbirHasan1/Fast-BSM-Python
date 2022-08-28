@@ -3,7 +3,6 @@ import scipy.special as sp
 import numpy as np
 
 class BlackScholesMerton:
-
     def __init__(self, option_type, price, strike, interest_rate, expiry, volatility, dividend_yield=0):
         self.s = price  # Underlying asset price
         self.k = strike  # Option strike K
@@ -19,15 +18,17 @@ class BlackScholesMerton:
     
     def dn(self, d):
         # the first order derivative of n(d)
-        # return stats.norm._pdf(d)
-        return np.exp(-d**2/2.0) / np.sqrt(2*np.pi)
-
+        sqrt_2pi = 2.5066282746310002
+        return np.exp(-d**2/2.0) / sqrt_2pi
+        # return np.exp(-d**2/2.0) / np.sqrt(2*np.pi)
+        
+    
     def d1(self):
-        d1 = (np.log(self.s / self.k) + (self.r - self.q + self.sigma ** 2 * 0.5) * self.T) / (self.sigma * np.sqrt(self.T))
+        d1 = (np.log(self.s / self.k) + (self.r - self.q + self.sigma**2 * 0.5) * self.T) / (self.sigma * np.sqrt(self.T))
         return d1
 
     def d2(self):
-        d2 = (np.log(self.s / self.k) + (self.r - self.q - self.sigma ** 2 * 0.5) * self.T) / (self.sigma * np.sqrt(self.T))
+        d2 = (np.log(self.s / self.k) + (self.r - self.q - self.sigma**2 * 0.5) * self.T) / (self.sigma * np.sqrt(self.T))
         return d2
 
     def bsm_price(self):
@@ -42,8 +43,6 @@ class BlackScholesMerton:
         else:
             print("option type can only be c or p")
 
-    ''' Greek letters for European options on an asset that provides a yield at rate q '''
-
     def delta(self):
         d1 = self.d1()
         if self.type == "c":
@@ -56,32 +55,7 @@ class BlackScholesMerton:
         dn1 = self.dn(d1)
         return dn1 * np.exp(-self.q * self.T) / (self.s * self.sigma * np.sqrt(self.T))
 
-    def theta(self):
-        d1 = self.d1()
-        d2 = d1 - self.sigma * np.sqrt(self.T)
-        dn1 = self.dn(d1)
-
-        if self.type == "c":
-            theta = -self.s * dn1 * self.sigma * np.exp(-self.q*self.T) / (2 * np.sqrt(self.T)) \
-                    + self.q * self.s * self.n(d1) * np.exp(-self.q*self.T) \
-                    - self.r * self.k * np.exp(-self.r*self.T) * self.n(d2)
-            return theta
-        elif self.type == "p":
-            theta = -self.s * dn1 * self.sigma * np.exp(-self.q * self.T) / (2 * np.sqrt(self.T)) \
-                    - self.q * self.s * self.n(-d1) * np.exp(-self.q * self.T) \
-                    + self.r * self.k * np.exp(-self.r * self.T) * self.n(-d2)
-            return theta
-
     def vega(self):
         d1 = self.d1()
         dn1 = self.dn(d1)
         return self.s * np.sqrt(self.T) * dn1 * np.exp(-self.q * self.T)
-
-    def rho(self):
-        d2 = self.d2()
-        if self.type == "c":
-            rho = self.k * self.T * (np.exp(-self.r*self.T)) * self.n(d2)
-        elif self.type == "p":
-            rho = -self.k * self.T * (np.exp(-self.r*self.T)) * self.n(-d2)
-
-        return rho
